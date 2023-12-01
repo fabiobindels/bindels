@@ -1,0 +1,26 @@
+{
+	"name": "bindels",
+	"version": "1.0.0",
+	"description": "Node Framework for Fabio's Projects",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/fabiobindels/bindels.git"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/fabiobindels/bindels/issues"
+	},
+	"homepage": "https://github.com/fabiobindels/bindels#readme",
+	"dependencies": {
+		"marked": "^10.0.0",
+		"ws": "^8.14.2"
+	},
+	"bin": {
+		"bindels": "./cli.js"
+	}
+}
