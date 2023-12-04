@@ -11,7 +11,6 @@ const {
 	getBundledJS,
 	clearRequireCache,
 } = require('./helpers.js');
-const { type } = require('os');
 
 const wss = new WebSocket.Server({ noServer: true });
 
