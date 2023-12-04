@@ -3,23 +3,26 @@ const path = require('path');
 const { marked } = require('marked');
 const { directories: dirs, elements } = require('./config.js');
 
-const renderer = new marked.Renderer();
-
-Object.keys(elements).forEach(key => {
-	switch (key) {
-		case 'code':
-			renderer.code = (code, infostring) => {
-				const lang = (infostring || '').match(/\S*/)[0];
-
-				return elements[key](code, lang);
-			};
-			break;
-		// other cases...
-	}
-});
-
 function parseMarkdown(filePath) {
-	// Use the renderer
+	const renderer = new marked.Renderer();
+
+	Object.keys(elements).forEach(key => {
+		switch (key) {
+			case 'code':
+				renderer.code = (code, infostring) => {
+					const lang = (infostring || '').match(/\S*/)[0];
+					const modulePath = path.join(dirs.markup, elements[key]);
+
+					clearRequireCache(modulePath);
+					const updatedModule = require(modulePath);
+
+					return updatedModule(code, lang);
+				};
+				break;
+			// other cases...
+		}
+	});
+
 	marked.use({ renderer });
 
 	let content = fs.readFileSync(filePath, 'utf-8');
@@ -145,13 +148,30 @@ const getBundledCSS = () => {
 
 const getBundledJS = () => {
 	let jsContent = '';
+	const initFilePath = path.join(dirs.scripts, 'init.js');
+
+	// Check if init.js exists
+	if (!fs.existsSync(initFilePath)) {
+		console.error(
+			'Error: init.js file does not exist in the scripts directory.'
+		);
+		return ''; // Return an empty string or handle the error as needed
+	}
+
 	const jsFiles = getAllJsFiles(dirs.scripts);
 
+	// First, bundle other JS files
 	jsFiles.forEach(filePath => {
-		let fileContent = fs.readFileSync(filePath, 'utf-8');
-		jsContent += fileContent;
+		if (filePath !== initFilePath) {
+			// Skip init.js for now
+			let fileContent = fs.readFileSync(filePath, 'utf-8');
+			jsContent += fileContent;
+		}
 	});
 
+	// Then, append init.js content at the end
+	let initFileContent = fs.readFileSync(initFilePath, 'utf-8');
+	jsContent += initFileContent;
 	if (process.env.NODE_ENV === 'development') {
 		jsContent += `
 			const socket = new WebSocket('ws://localhost:3000');
@@ -170,6 +190,11 @@ const getBundledJS = () => {
 					if (oldContent === newContent) {
 						window.location.reload();
 					}
+				} else if (data.type === 'styles') {
+					const link = document.querySelector('link[rel="stylesheet"]');
+					link.href = link.href.split('?')[0] + '?' + Date.now();
+				} else if (data.type === 'reload') {
+					window.location.reload();
 				}
 			});
 		`;
@@ -220,10 +245,16 @@ const buildPage = page => {
 	return html;
 };
 
+function clearRequireCache(modulePath) {
+	const resolvedPath = require.resolve(modulePath);
+	delete require.cache[resolvedPath];
+}
+
 module.exports = {
 	parseMarkdown,
 	getBundledCSS,
 	getBundledJS,
 	parseAllFiles,
 	buildPage,
+	clearRequireCache,
 };

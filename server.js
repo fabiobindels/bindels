@@ -4,7 +4,14 @@ const path = require('path');
 const fs = require('fs');
 const { directories: dirs } = require('./config.js');
 const build = require('./build.js');
-const { parseMarkdown, buildPage } = require('./helpers.js');
+const {
+	parseMarkdown,
+	buildPage,
+	getBundledCSS,
+	getBundledJS,
+	clearRequireCache,
+} = require('./helpers.js');
+const { type } = require('os');
 
 const wss = new WebSocket.Server({ noServer: true });
 
@@ -19,7 +26,7 @@ function notifyClients(type, content) {
 const server = http.createServer((req, res) => {
 	let filePath = path.join(
 		dirs.dist,
-		req.url === '/' ? 'index.html' : req.url
+		req.url === '/' ? 'index.html' : req.url.split('?')[0]
 	);
 
 	const ext = path.extname(filePath);
@@ -67,7 +74,6 @@ function startServer() {
 		});
 	});
 
-	const workingDir = process.cwd();
 	// Watch for content changes
 	fs.watch(dirs.content, { recursive: true }, async (eventType, filename) => {
 		if (!filename) {
@@ -89,23 +95,47 @@ function startServer() {
 		notifyClients('hmr', bodyContent);
 	});
 
-	fs.watch(workingDir, { recursive: true }, async (eventType, filename) => {
-		if (filename) {
-			// Check if the change is not in the dirs.dist directory
-			const fullPath = path.resolve(workingDir, filename);
-			if (
-				!fullPath.startsWith(dirs.dist) &&
-				!fullPath.startsWith(dirs.content)
-			) {
-				console.log(`Change detected: ${filename}`);
-				try {
-					await build(); // Ensure build function is awaited
-					notifyClients();
-				} catch (error) {
-					console.error('Error during build:', error);
-				}
-			}
+	fs.watch(dirs.markup, { recursive: true }, async (eventType, filename) => {
+		if (!filename) {
+			return;
 		}
+
+		const isBlock = filename.split('/')[0] === 'blocks';
+
+		if (isBlock) {
+			mdCache = await build();
+			notifyClients('reload');
+			return;
+		}
+
+		clearRequireCache(path.join(dirs.markup, filename));
+		const pagesToUpdate = Object.values(mdCache).filter(page => {
+			return page.template.toLowerCase() === filename.replace('.js', '');
+		});
+
+		for (const page of pagesToUpdate) {
+			buildPage(page);
+		}
+
+		notifyClients('reload');
+	});
+
+	fs.watch(dirs.styles, { recursive: true }, async (eventType, filename) => {
+		if (!filename) {
+			return;
+		}
+
+		fs.writeFileSync(path.join(dirs.dist, 'styles.css'), getBundledCSS());
+		notifyClients('styles');
+	});
+
+	fs.watch(dirs.scripts, { recursive: true }, async (eventType, filename) => {
+		if (!filename) {
+			return;
+		}
+
+		fs.writeFileSync(path.join(dirs.dist, 'scripts.js'), getBundledJS());
+		notifyClients('reload');
 	});
 
 	server.listen(3000, async () => {
