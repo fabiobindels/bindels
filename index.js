@@ -4,15 +4,18 @@ const { parseMarkdown } = require('./helpers.js');
 const { directories } = require('./config.js');
 
 const getAllFiles = (directory = '') => {
+	const contentPath = path.join(directories.content, directory);
+
 	return fs
-		.readdirSync(path.join(directories.content, directory))
+		.readdirSync(contentPath, { withFileTypes: true }) // Get directory entries as fs.Dirent objects
 		.filter(
-			file =>
-				file !== 'index.md' && file.endsWith('.md') && file !== '404.md'
+			dirent =>
+				dirent.isFile() &&
+				dirent.name !== 'index.md' &&
+				dirent.name.endsWith('.md') &&
+				dirent.name !== '404.md'
 		)
-		.map(file =>
-			parseMarkdown(path.join(directories.content, directory, file))
-		);
+		.map(dirent => parseMarkdown(path.join(contentPath, dirent.name)));
 };
 
 module.exports = { getAllFiles };

@@ -79,6 +79,30 @@ function startServer() {
 			return;
 		}
 
+		const contentPath = path.join(dirs.content, filename);
+		let distPath = path.join(dirs.dist, filename);
+
+		if (!fs.existsSync(contentPath)) {
+			distPath = distPath.replace('.md', '.html');
+
+			if (fs.existsSync(distPath)) {
+				await fs.promises.rm(distPath);
+			}
+			notifyClients('reload');
+			return;
+		}
+
+		if (!filename.endsWith('.md')) {
+			fs.copyFile(contentPath, distPath, err => {
+				if (err) {
+					console.error('Error copying file:', err);
+				}
+			});
+
+			notifyClients('reload');
+			return;
+		}
+
 		const page = parseMarkdown(path.join(dirs.content, filename));
 
 		page.destination = path.join(
@@ -90,6 +114,10 @@ function startServer() {
 
 		const html = buildPage(page);
 		// Get content from the body tag
+		if (!html) {
+			return;
+		}
+
 		const bodyContent = html.match(/<body>([\s\S]*)<\/body>/)[1];
 		notifyClients('hmr', bodyContent);
 	});

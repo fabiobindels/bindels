@@ -30,7 +30,7 @@ const removeOldFiles = async (directory = '') => {
 			!content.includes(item.replace('.html', '.md'))
 		) {
 			await fs.promises.unlink(distPath);
-		} else if (!['.css', '.js', '.html'].some(ext => item.endsWith(ext))) {
+		} else if (fs.statSync(distPath).isDirectory()) {
 			await removeOldFiles(path.join(directory, item));
 		}
 	}

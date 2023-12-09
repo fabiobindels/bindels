@@ -3,6 +3,29 @@ const path = require('path');
 const { marked } = require('marked');
 const { directories: dirs, elements } = require('./config.js');
 
+const copyDirectory = (src, dest) => {
+	// Create the destination directory if it does not exist
+	if (!fs.existsSync(dest)) {
+		fs.mkdirSync(dest, { recursive: true });
+	}
+
+	// Read all the files and subdirectories from source
+	const entries = fs.readdirSync(src, { withFileTypes: true });
+
+	for (const entry of entries) {
+		const srcPath = path.join(src, entry.name);
+		const destPath = path.join(dest, entry.name);
+
+		if (entry.isDirectory()) {
+			// If entry is a directory, recursively copy it
+			copyDirectory(srcPath, destPath);
+		} else {
+			// If entry is a file, copy it
+			fs.copyFileSync(srcPath, destPath);
+		}
+	}
+};
+
 function parseMarkdown(filePath) {
 	const renderer = new marked.Renderer();
 
@@ -201,12 +224,20 @@ const getBundledJS = () => {
 
 const parseAllFiles = (directory = '') => {
 	const contentPath = path.join(dirs.content, directory);
+
+	if (directory === 'assets') {
+		const distAssetsPath = path.join(dirs.dist, 'assets');
+		copyDirectory(contentPath, distAssetsPath);
+		return;
+	}
+
 	const content = fs.readdirSync(contentPath);
 
 	let files = {};
 
 	for (const child of content) {
 		const childPath = path.join(directory, child);
+
 		if (child.endsWith('.md')) {
 			const page = parseMarkdown(path.join(dirs.content, childPath));
 
@@ -215,9 +246,8 @@ const parseAllFiles = (directory = '') => {
 				directory,
 				page.slug + '.html'
 			);
-
 			files[page.slug] = page;
-		} else {
+		} else if (fs.statSync(path.join(contentPath, child)).isDirectory()) {
 			const childFiles = parseAllFiles(childPath);
 			files = { ...files, ...childFiles };
 		}
@@ -229,6 +259,7 @@ const parseAllFiles = (directory = '') => {
 const buildPage = page => {
 	if (!page.template) {
 		console.error('Error: No template specified for', page.slug);
+		return;
 	}
 
 	const templateName = page.template.toLowerCase() + '.js';
