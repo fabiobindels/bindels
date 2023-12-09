@@ -31,7 +31,7 @@ module.exports = home;
 This approach emphasizes simplicity, using plain JavaScript with CommonJS
 modules. The special comment before the HTML string enables syntax highlighting
 in Visual Studio Code with the
-[es6-string-html][https://marketplace.visualstudio.com/items?itemName=Tobermory.es6-string-html]
+[es6-string-html](https://marketplace.visualstudio.com/items?itemName=Tobermory.es6-string-html)
 extension. The function parameters are derived from the Markdown frontmatter.
 
 Dedicated blocks within the markup directory are reserved for creating elements
