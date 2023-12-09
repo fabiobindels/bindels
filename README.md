@@ -12,19 +12,14 @@ files in this directory serve as templates and entry points for your web pages.
 Here’s an example template to illustrate the process:
 
 ```js
-const headingGroup = require('./components/heading-group.js');
 const articleList = require('./components/article-list.js');
 
 function home({ title, subtitle, description }) {
-	const articles = getAllFiles('');
-
 	let html = /* html */ `
-		<div style="padding: 5vw;">
-			<div style="max-width: var(--max-width); margin-inline: auto;">
-				${headingGroup({ title, subtitle })}
-				${articleList(articles)}
-			</div>
-		</div>
+		<main>
+			<h1>This is a title</h1>
+			${articleList()}
+		</main>
 	`;
 
 	return layout({ children: html, title, description });
