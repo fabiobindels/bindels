@@ -45,8 +45,8 @@ frontmatter, like this:
 
 ```yaml
 ---
-description: Front-end developer who likes to share some stuff sometimes title:
-Fabio Bindels template: Home
+description: Front-end developer who likes to share some stuff sometimes
+template: Home
 ---
 ```
 
