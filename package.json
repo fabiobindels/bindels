@@ -1,6 +1,6 @@
 {
 	"name": "bindels",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "A very lightweight node framework for building websites with markdown",
 	"main": "index.js",
 	"scripts": {
