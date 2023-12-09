@@ -23,7 +23,12 @@ const watchFiles = async wss => {
 		{ recursive: true },
 		async (eventType, filename) => {
 			try {
-				if (filename.startsWith('dist')) return;
+				if (
+					filename.startsWith('dist') ||
+					filename.startsWith('.git')
+				) {
+					return;
+				}
 
 				const fullPath = path.resolve(process.cwd(), filename);
 				if (fs.existsSync(fullPath)) {
