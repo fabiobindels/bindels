@@ -1,12 +1,9 @@
 const path = require('path');
 const fs = require('fs');
-const {
-	getBundledCSS,
-	getBundledJS,
-	parseAllFiles,
-	buildPage,
-} = require('./helpers.js');
 const { directories: dirs } = require('./config.js');
+const { getBundledCSS, getBundledJS } = require('./helpers/bundlers.js');
+const parseAllFiles = require('./helpers/parseAllFiles.js');
+const buildPage = require('./helpers/buildPage.js');
 
 const removeOldFiles = async (directory = '') => {
 	try {
