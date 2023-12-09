@@ -1,12 +1,14 @@
 # Bindels
 
-Bindels is a lightweight framework for static site generation with markdown.
+Bindels is a streamlined and efficient framework designed for generating static
+sites using Markdown. Its simplicity and use of familiar JavaScript make it an
+ideal choice for developers looking to build fast, markdown-driven websites.
 
 ## Creating components
 
-Components are created inside the `markup`. The top level files are the
-templates and thus your entrypoints for creating pages. This is an template
-example:
+In Bindels, components are crafted within the `markup`` directory. The root
+files in this directory serve as templates and entry points for your web pages.
+Here’s an example template to illustrate the process:
 
 ```js
 const headingGroup = require('./components/heading-group.js');
@@ -30,44 +32,48 @@ function home({ title, subtitle, description }) {
 module.exports = home;
 ```
 
-As seen the example, this is no magic. It's just plain JS using commonJS! The
-comment before the html string adds syntax highlighting when used in combination
-with the
+This approach emphasizes simplicity, using plain JavaScript with CommonJS
+modules. The special comment before the HTML string enables syntax highlighting
+in Visual Studio Code with the
 [es6-string-html][https://marketplace.visualstudio.com/items?itemName=Tobermory.es6-string-html]
-vscode extension. The arguments are the frontmatter that's added to the markdown
-content.
+extension. The function parameters are derived from the Markdown frontmatter.
 
-Inside the `markup` directory is a `blocks` directory reserved for creating
-blocks. These blocks can be added to your markdown.
+Dedicated blocks within the markup directory are reserved for creating elements
+that can be integrated directly into your Markdown content.
 
 ## Writing content
 
-Content is written inside of the `content` directory. The frontmatter will be
-used as arguments for your template. It is important to also define a template.
-This will look something like this.
+Place your content inside the `content`` directory. Frontmatter attributes are
+passed as arguments to your templates. Remember to specify the template in the
+frontmatter, like this:
 
-```
+```yaml
 ---
 description: Front-end developer who likes to share some stuff sometimes title:
 Fabio Bindels template: Home
 ---
 ```
 
-To add assets like images or favicons, create an `assets` directory inside the
-`content` directory.
+To incorporate assets such as images or favicons, use the `assets` directory
+within `content`.
 
-Adding blocks to markdown is easy. It looks something like this:
+Including blocks in your Markdown is straightforward:
 
 ```html
 <!-- include text-zoom-grid -->
 ```
 
-## Writing CSS
+## CSS & JavaScript
 
-CSS can be written inside the `styles` directory. This CSS automatically get's
-bundled and outputted to the `dist` directory.
+CSS files should be placed in the styles directory. The framework automatically
+bundles these files and outputs them to the dist directory.
 
-## Writing JS
+For JavaScript, write your code in vanilla JS within the scripts directory. This
+code is bundled and outputted to the scripts directory, ready for use in your
+site.
 
-JS can be written vanilla inside the `scripts` directory. This code get's
-bundled and outputted to the `scripts` directory.
+## Configuration
+
+In the root directory add a file named `bindels.config.js`. In this file you can
+define how some default elements are rendered, like the `<code>` element. You
+can also define custom directories.
