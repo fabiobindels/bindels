@@ -150,26 +150,22 @@ const getBundledJS = () => {
 	let jsContent = '';
 	const initFilePath = path.join(dirs.scripts, 'init.js');
 
-	// Check if init.js exists
 	if (!fs.existsSync(initFilePath)) {
 		console.error(
 			'Error: init.js file does not exist in the scripts directory.'
 		);
-		return ''; // Return an empty string or handle the error as needed
+		return '';
 	}
 
 	const jsFiles = getAllJsFiles(dirs.scripts);
 
-	// First, bundle other JS files
 	jsFiles.forEach(filePath => {
 		if (filePath !== initFilePath) {
-			// Skip init.js for now
 			let fileContent = fs.readFileSync(filePath, 'utf-8');
 			jsContent += fileContent;
 		}
 	});
 
-	// Then, append init.js content at the end
 	let initFileContent = fs.readFileSync(initFilePath, 'utf-8');
 	jsContent += initFileContent;
 	if (process.env.NODE_ENV === 'development') {

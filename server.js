@@ -99,6 +99,7 @@ function startServer() {
 			return;
 		}
 
+		clearRequireCache(path.join(dirs.markup, filename));
 		const isBlock = filename.split('/')[0] === 'blocks';
 
 		if (isBlock) {
@@ -107,7 +108,6 @@ function startServer() {
 			return;
 		}
 
-		clearRequireCache(path.join(dirs.markup, filename));
 		const pagesToUpdate = Object.values(mdCache).filter(page => {
 			return page.template.toLowerCase() === filename.replace('.js', '');
 		});
