@@ -2,7 +2,8 @@
 
 Bindels is a streamlined and efficient framework designed for generating static
 sites using Markdown. Its simplicity and use of familiar JavaScript make it an
-ideal choice for developers looking to build fast, markdown-driven websites.
+ideal choice for developers looking to build fast, markdown-driven websites
+without a bunch of dependencies.
 
 ## Creating components
 
