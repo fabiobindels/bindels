@@ -9,6 +9,7 @@ const defaultConfig = {
 		scripts: './scripts',
 		dist: './dist',
 	},
+	notFoundFile: '404.html',
 	elements: {},
 	templates: {},
 };
@@ -24,14 +25,13 @@ try {
 }
 
 const config = { ...defaultConfig, ...userConfig };
-const { paths, templates, elements } = config;
 
-const directories = {
-	markup: path.join(process.cwd(), paths.markup),
-	content: path.join(process.cwd(), paths.content),
-	styles: path.join(process.cwd(), paths.styles),
-	scripts: path.join(process.cwd(), paths.scripts),
-	dist: path.join(process.cwd(), paths.dist),
+config.directories = {
+	markup: path.join(process.cwd(), config.paths.markup),
+	content: path.join(process.cwd(), config.paths.content),
+	styles: path.join(process.cwd(), config.paths.styles),
+	scripts: path.join(process.cwd(), config.paths.scripts),
+	dist: path.join(process.cwd(), config.paths.dist),
 };
 
-module.exports = { config, directories, elements, templates };
+module.exports = config;

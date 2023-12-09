@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const { parseMarkdown } = require('./helpers.js');
 const { directories } = require('./config.js');
+const parseMarkdown = require('./helpers/parseMarkdown.js');
 
 const getAllFiles = (directory = '') => {
 	const contentPath = path.join(directories.content, directory);
