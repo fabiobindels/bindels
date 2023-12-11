@@ -86,7 +86,7 @@ Including blocks in your Markdown is straightforward:
 -   **Purpose**: This file is your central place to customize various aspects of
     your project.
     -   **Element Rendering**: Define custom rendering options for default HTML
-        elements, such as the <code> element.
+        elements, such as the `<code>` element.
     -   **Directory Management**: Specify custom directory paths as per your
         project structure and requirements.
 
