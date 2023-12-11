@@ -72,9 +72,12 @@ const getBundledJS = () => {
 			const socket = new WebSocket('ws://localhost:3000');
 			socket.addEventListener('message', (event) => {
 				const data = JSON.parse(event.data);
-				console.log(data);
+
 				if (data.type === 'reload') {
 					window.location.reload();
+				} else if (data.type === 'styles') {
+					const link = document.querySelector('link[rel="stylesheet"]');
+					link.href = link.href.split('?')[0] + '?' + Date.now();
 				}
 			});
 		`;

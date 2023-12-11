@@ -7,9 +7,9 @@ without a bunch of dependencies.
 
 ## Creating components
 
-In Bindels, components are crafted within the `markup`` directory. The root
-files in this directory serve as templates and entry points for your web pages.
-Here’s an example template to illustrate the process:
+In Bindels, components are crafted within the `markup` directory. The root files
+in this directory serve as templates and entry points for your web pages. Here’s
+an example template to illustrate the process:
 
 ```js
 const articleList = require('./components/article-list.js');
@@ -56,20 +56,40 @@ within `content`.
 Including blocks in your Markdown is straightforward:
 
 ```html
-<!-- include text-zoom-grid -->
+<!-- include block-name-here -->
 ```
 
-## CSS & JavaScript
+## CSS & JavaScript Management
 
-CSS files should be placed in the styles directory. The framework automatically
-bundles these files and outputs them to the dist directory.
+### CSS Integration
 
-For JavaScript, write your code in vanilla JS within the scripts directory. This
-code is bundled and outputted to the scripts directory, ready for use in your
-site.
+-   **Location**: Store your CSS files in the styles directory.
+-   **Bundling**: The framework automatically compiles and bundles these files,
+    directing the output to the `dist` directory.
+-   **Hot Module Replacement (HMR)**: Enjoy real-time updates during
+    development, as the framework implements HMR for CSS on the development
+    server.
 
-## Configuration
+### JavaScript Handling
 
-In the root directory add a file named `bindels.config.js`. In this file you can
-define how some default elements are rendered, like the `<code>` element. You
-can also define custom directories.
+-   **Writing Code**: Place your vanilla JavaScript code in the scripts
+    directory.
+-   **Processing**: The framework bundles this code and outputs it to the `dist`
+    directory, ensuring it's optimized and ready for deployment on your site.
+
+## Configuration Setup
+
+### Creating Configuration File
+
+-   **File Creation**: In the root directory of your project, create a file
+    named bindels.config.js.
+-   **Purpose**: This file is your central place to customize various aspects of
+    your project.
+    -   **Element Rendering**: Define custom rendering options for default HTML
+        elements, such as the <code> element.
+    -   **Directory Management**: Specify custom directory paths as per your
+        project structure and requirements.
+
+By configuring bindels.config.js, you gain greater control over the rendering
+behaviors and directory organization, tailoring the project to your specific
+needs.
