@@ -7,9 +7,9 @@ without a bunch of dependencies.
 
 ## Creating components
 
-In Bindels, components are crafted within the `markup`` directory. The root
-files in this directory serve as templates and entry points for your web pages.
-Here’s an example template to illustrate the process:
+In Bindels, components are crafted within the `markup` directory. The root files
+in this directory serve as templates and entry points for your web pages. Here’s
+an example template to illustrate the process:
 
 ```js
 const articleList = require('./components/article-list.js');
@@ -56,7 +56,7 @@ within `content`.
 Including blocks in your Markdown is straightforward:
 
 ```html
-<!-- include text-zoom-grid -->
+<!-- include block-name-here -->
 ```
 
 ## CSS & JavaScript

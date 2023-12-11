@@ -32,7 +32,14 @@ const fileExists = async filePath => {
 const getMimeType = ext => MIME_TYPES[ext] || MIME_TYPES.default;
 
 const prepareFile = async url => {
-	let filePath = path.join(dirs.dist, url.endsWith('/') ? 'index.html' : url);
+	// Create a new URL object (base URL is required, localhost can be a placeholder)
+	const myURL = new URL(url, 'http://localhost');
+
+	// Use the pathname from the URL object
+	let filePath = path.join(
+		dirs.dist,
+		myURL.pathname.endsWith('/') ? 'index.html' : myURL.pathname
+	);
 	if (!path.extname(filePath) && (await fileExists(`${filePath}.html`))) {
 		filePath += '.html';
 	}
