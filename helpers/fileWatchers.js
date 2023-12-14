@@ -5,9 +5,12 @@ const build = require('../build');
 const { directories: dirs } = require('../config');
 const clearRequireCache = require('./clearRequireCache');
 const { getBundledCSS, getBundledJS } = require('./bundlers');
+const { buildDependencyMap, findDependentModules } = require('./dependencyMap');
 
 const watchFiles = async wss => {
 	let debounceTimer;
+	let watchTimer;
+
 	const notifyClients = (type = 'reload', delay = 100) => {
 		clearTimeout(debounceTimer);
 		debounceTimer = setTimeout(() => {
@@ -20,18 +23,27 @@ const watchFiles = async wss => {
 	};
 
 	const handleFileChange = async (eventType, filename) => {
+		if (watchTimer) return;
+
+		// When renaming a file, two events are fired: one for the old name and one for the new name.
+		// We only want to handle one of them. because it causes an error
+		watchTimer = setTimeout(() => {
+			watchTimer = null;
+		}, 50);
+
 		if (!(filename.endsWith('.md') || filename.endsWith('.js'))) return;
 		try {
 			if (filename.endsWith('.js')) {
-				const markupFiles = fs.readdirSync(dirs.markup);
-
-				for (const file of markupFiles) {
-					if (path.extname(file) !== '.js') continue;
-					clearRequireCache(path.join(dirs.markup, file));
-				}
-
 				const fullPath = path.resolve(dirs.markup, filename);
+				const dependentModules = findDependentModules(
+					fullPath,
+					dependencyMap
+				);
+
 				clearRequireCache(fullPath);
+				dependentModules.forEach(module => {
+					clearRequireCache(module);
+				});
 			}
 
 			await build();
@@ -72,10 +84,55 @@ const watchFiles = async wss => {
 	});
 
 	// Watch for changes in the markup directory
-	fs.watch(dirs.markup, { recursive: true }, handleFileChange);
+	fs.watch(dirs.markup, { recursive: true }, async (eventType, filename) => {
+		if (watchTimer) return;
+
+		// When renaming a file, two events are fired: one for the old name and one for the new name.
+		// We only want to handle one of them. because it causes an error
+		watchTimer = setTimeout(() => {
+			watchTimer = null;
+		}, 50);
+
+		if (!filename.endsWith('.js')) return;
+		try {
+			const fullPath = path.resolve(dirs.markup, filename);
+			const dependencyMap = buildDependencyMap(dirs.markup);
+			const dependentModules = findDependentModules(
+				fullPath,
+				dependencyMap
+			);
+
+			clearRequireCache(fullPath);
+			dependentModules.forEach(module => {
+				clearRequireCache(module);
+			});
+
+			await build();
+			console.log(`File ${filename} changed.`);
+			notifyClients();
+		} catch (error) {
+			console.error(
+				`Error processing file change for ${filename}:`,
+				error
+			);
+		}
+	});
 
 	// Watch for changes in the content directory
-	fs.watch(dirs.content, { recursive: true }, handleFileChange);
+	fs.watch(dirs.content, { recursive: true }, async (eventType, filename) => {
+		if (!filename.endsWith('.md')) return;
+
+		try {
+			await build();
+			console.log(`File ${filename} changed.`);
+			notifyClients();
+		} catch (error) {
+			console.error(
+				`Error processing file change for ${filename}:`,
+				error
+			);
+		}
+	});
 
 	// Watch for changes in the config file
 	fs.watch(
